@@ -1,8 +1,20 @@
+"""
+Menu Shrinker AI Backend
+A Flask API for analyzing menu photos and suggesting items based on dietary preferences.
+"""
+
 from flask import Flask, jsonify, request
 from werkzeug.datastructures import FileStorage
 import requests
 import os
 import base64
+from PIL import Image
+import pytesseract
+from io import BytesIO
+
+# ============================================================================
+# Configuration
+# ============================================================================
 
 app = Flask(__name__)
 
@@ -10,34 +22,44 @@ app = Flask(__name__)
 GRADIENT_API_KEY = os.getenv('GRADIENT_API_KEY', 'YOUR_MODEL_ACCESS_KEY')
 
 
-def call_gradient_ai(prompt, images=None):
-    """Call Gradient AI model with the given prompt and optional images."""
+# ============================================================================
+# Utility Functions
+# ============================================================================
+
+def extract_text_from_image(image_file):
+    """Extract text from an image file using OCR."""
+    try:
+        # Read image data
+        img_data = image_file.read()
+        image_file.seek(0)  # Reset file pointer
+
+        # Open image with PIL
+        image = Image.open(BytesIO(img_data))
+
+        # Extract text using pytesseract
+        text = pytesseract.image_to_string(image)
+
+        print(f"[OCR] Extracted {len(text)} characters from {image_file.filename}")
+        return text.strip()
+    except Exception as e:
+        print(f"[OCR] Error extracting text: {str(e)}")
+        return ""
+
+
+def call_gradient_ai(prompt):
+    """Call Gradient AI model with the given prompt."""
     url = "https://inference.do-ai.run/v1/chat/completions"
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {GRADIENT_API_KEY}"
     }
 
-    # Build message content with images if provided
-    if images:
-        content = [{"type": "text", "text": prompt}]
-        for img_data in images:
-            content.append({
-                "type": "image_url",
-                "image_url": {
-                    "url": f"data:image/jpeg;base64,{img_data}"
-                }
-            })
-        message_content = content
-    else:
-        message_content = prompt
-
     data = {
-        "model": "gpt-4o-mini",
+        "model": "llama3.3-70b-instruct",
         "messages": [
             {
                 "role": "user",
-                "content": message_content
+                "content": prompt
             }
         ],
         "temperature": 0.7,
@@ -45,27 +67,39 @@ def call_gradient_ai(prompt, images=None):
     }
 
     print(f"[Gradient AI] Calling API with prompt: {prompt[:100]}...")
-    print(f"[Gradient AI] Images included: {len(images) if images else 0}")
     print(f"[Gradient AI] API Key set: {GRADIENT_API_KEY[:10]}..." if GRADIENT_API_KEY != 'YOUR_MODEL_ACCESS_KEY' else "[Gradient AI] WARNING: Using default API key")
 
     response = requests.post(url, headers=headers, json=data)
 
     print(f"[Gradient AI] Response status: {response.status_code}")
-    print(f"[Gradient AI] Response body: {response.text}")
+    print(f"[Gradient AI] Response body: {response.text[:500]}...")
 
-    return response.json()
+    if response.status_code != 200:
+        return {"error": response.text, "status_code": response.status_code}
 
+    try:
+        return response.json()
+    except:
+        return {"error": "Failed to parse response", "raw": response.text}
+
+
+# ============================================================================
+# API Routes
+# ============================================================================
 
 @app.route('/')
 def index():
+    """Health check endpoint."""
     return jsonify({
         'message': 'Menu Shrinker AI Backend',
-        'status': 'running'
+        'status': 'running',
+        'version': '1.0.0'
     })
 
 
 @app.route('/health')
 def health():
+    """Health check endpoint."""
     return jsonify({'status': 'healthy'}), 200
 
 
@@ -82,8 +116,18 @@ def get_models():
     return jsonify(response.json()), response.status_code
 
 
-@app.route('/suggest', methods=['POST', 'GET'])
-def menu_suggestion():
+@app.route('/suggest', methods=['POST'])
+def suggest():
+    """
+    Suggest menu items based on dietary preferences and menu photos.
+
+    Expects:
+        - preferences: list of strings (dietary preferences)
+        - menu_photos: list of image files
+
+    Returns:
+        JSON with AI-generated suggestions
+    """
     # Get preferences from form data or JSON
     preferences = request.form.getlist('preferences') if 'preferences' in request.form else request.json.get('preferences', [])
 
@@ -97,28 +141,45 @@ def menu_suggestion():
     if not menu_photos:
         return jsonify({'error': 'menu_photos are required'}), 400
 
-    # Encode menu photos as base64
-    encoded_images = []
+    # Extract text from all menu photos using OCR
+    print(f"[OCR] Processing {len(menu_photos)} menu photos...")
+    menu_texts = []
     for photo in menu_photos:
-        img_data = photo.read()
-        encoded = base64.b64encode(img_data).decode('utf-8')
-        encoded_images.append(encoded)
-        photo.seek(0)  # Reset file pointer
+        text = extract_text_from_image(photo)
+        if text:
+            menu_texts.append(text)
+
+    if not menu_texts:
+        return jsonify({'error': 'Could not extract text from menu photos'}), 400
+
+    # Combine all menu text
+    full_menu_text = "\n\n=== MENU ===\n\n".join(menu_texts)
 
     # Build prompt for AI
     preferences_str = ", ".join(preferences)
-    prompt = f"Analyze these menu photos and suggest items that match these dietary preferences: {preferences_str}. List the recommended dishes and explain why they match."
+    prompt = f"""Here is a restaurant menu:
 
-    # Call Gradient AI with images
-    ai_response = call_gradient_ai(prompt, images=encoded_images)
+{full_menu_text}
+
+Based on these dietary preferences: {preferences_str}
+
+Please suggest 3-5 menu items that best match these preferences. For each item, explain why it matches the preferences."""
+
+    # Call Gradient AI
+    ai_response = call_gradient_ai(prompt)
 
     return jsonify({
         'message': 'Menu suggestion generated',
         'preferences': preferences,
-        'photos_received': len(menu_photos),
-        'ai_suggestion': ai_response
+        'photos_processed': len(menu_photos),
+        'menu_items_found': len(menu_texts),
+        'suggestion': ai_response
     }), 200
 
+
+# ============================================================================
+# Main
+# ============================================================================
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
