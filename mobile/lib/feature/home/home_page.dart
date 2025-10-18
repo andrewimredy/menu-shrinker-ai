@@ -5,6 +5,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:fodie_ai/feature/home/cubit/home_state.dart';
+import 'package:fodie_ai/feature/photo_selection/photo_selection.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'cubit/home_cubit.dart';
 
@@ -36,8 +38,26 @@ class HomePage extends StatelessWidget {
         ),
         body: const HomeView(),
         floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // TODO implement it
+          onPressed: () async {
+            final List<String>? uploadedImageUrls = await Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => const PhotoSelectionPage(),
+              ),
+            );
+            
+            if (uploadedImageUrls != null && uploadedImageUrls.isNotEmpty) {
+              // Process the uploaded image URLs
+              debugPrint('Uploaded ${uploadedImageUrls.length} photos to Firebase Storage');
+              debugPrint('URLs: $uploadedImageUrls');
+              
+              // Here you would typically send these URLs to your backend or process them
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('${uploadedImageUrls.length} images uploaded successfully'),
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            }
           },
           child: const Icon(Icons.add),
         ),
@@ -51,10 +71,11 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container (
-      width: 100,
-      height: 100,
-      color: Colors.red,
+    return Center (
+      child: Text(
+        'No chats',
+        style: pageHeaderSmallStyle,
+      ),
     );
   }
 }

@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:go_router/go_router.dart';
 import 'package:fodie_ai/firebase_options.dart';
 import 'package:logger/logger.dart';
@@ -23,11 +24,13 @@ Future<void> bootstrap({
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  ResourceConfig.setup(persistentStorageFactory: const HiveResourceStorageProvider());
+  ResourceConfig.setup(
+    persistentStorageFactory: const HiveResourceStorageProvider(),
+  );
 
   await configureDependencies();
 
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   runApp(builder(getIt<GoRouter>()));
-}, (Object error, StackTrace stackTrace) => getIt<Logger>().e('Uncaught exception', error, stackTrace));
+}, (Object error, StackTrace stackTrace) => print(error));

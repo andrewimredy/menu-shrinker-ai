@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>This app needs camera access to take photos of menus</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app needs photos access to select menu images</string>
 </dict>
 </plist>

@@ -15,7 +15,10 @@ import 'package:fodie_ai/common/common.dart' as _i606;
 import 'package:fodie_ai/common/constant/config.dart' as _i889;
 import 'package:fodie_ai/common/injection/api_module.dart' as _i166;
 import 'package:fodie_ai/common/injection/third_party_module.dart' as _i710;
+import 'package:fodie_ai/common/network/api/ai_chat_api.dart' as _i194;
 import 'package:fodie_ai/common/network/api/user_api.dart' as _i464;
+import 'package:fodie_ai/common/network/interceptor/auth_interceptor.dart'
+    as _i125;
 import 'package:fodie_ai/common/network/interceptor/base_interceptor.dart'
     as _i81;
 import 'package:fodie_ai/common/network/interceptor/error_interceptor.dart'
@@ -24,14 +27,19 @@ import 'package:fodie_ai/common/network/interceptor/logger_interceptor.dart'
     as _i167;
 import 'package:fodie_ai/common/repository/chats_repository.dart' as _i600;
 import 'package:fodie_ai/common/repository/user_repository.dart' as _i445;
+import 'package:fodie_ai/common/service/ai_chat_service.dart' as _i128;
+import 'package:fodie_ai/common/service/camera_service.dart' as _i632;
 import 'package:fodie_ai/common/service/chats_service.dart' as _i510;
 import 'package:fodie_ai/common/service/device_info.dart' as _i205;
 import 'package:fodie_ai/common/service/iap_service.dart' as _i509;
+import 'package:fodie_ai/common/service/storage_service.dart' as _i398;
 import 'package:fodie_ai/common/service/user_service.dart' as _i419;
+import 'package:fodie_ai/feature/ai_chat/cubit/ai_chat_cubit.dart' as _i1017;
 import 'package:fodie_ai/feature/detail/cubit/detail_cubit.dart' as _i685;
 import 'package:fodie_ai/feature/home/cubit/home_cubit.dart' as _i600;
 import 'package:fodie_ai/feature/login/cubit/login_cubit.dart' as _i442;
 import 'package:fodie_ai/feature/setting/cubit/setting_cubit.dart' as _i871;
+import 'package:fodie_ai/src/service/storage_service.dart' as _i252;
 import 'package:get_it/get_it.dart' as _i174;
 import 'package:go_router/go_router.dart' as _i583;
 import 'package:google_sign_in/google_sign_in.dart' as _i116;
@@ -54,6 +62,7 @@ extension GetItInjectableX on _i174.GetIt {
     );
     final thirdPartyModule = _$ThirdPartyModule();
     final apiModule = _$ApiModule();
+    gh.factory<_i125.AuthInterceptor>(() => _i125.AuthInterceptor());
     gh.factory<_i583.GoRouter>(() => thirdPartyModule.router);
     gh.factory<_i974.Logger>(() => thirdPartyModule.logger);
     gh.factory<_i973.InternetConnectionChecker>(
@@ -64,6 +73,7 @@ extension GetItInjectableX on _i174.GetIt {
     gh.factory<_i974.FirebaseFirestore>(() => thirdPartyModule.firestore);
     gh.factory<_i59.FirebaseAuth>(() => thirdPartyModule.firebaseAuth);
     gh.factory<_i690.InAppPurchase>(() => thirdPartyModule.inAppPurchase);
+    gh.factory<_i632.CameraService>(() => _i632.CameraService());
     gh.factory<_i600.HomeCubit>(() => _i600.HomeCubit());
     gh.factory<_i685.DetailCubit>(() => _i685.DetailCubit());
     gh.singleton<_i600.ChatsRepository>(() => _i600.ChatsRepository());
@@ -76,6 +86,8 @@ extension GetItInjectableX on _i174.GetIt {
       },
       preResolve: true,
     );
+    gh.lazySingleton<_i398.StorageService>(() => _i398.StorageService());
+    gh.lazySingleton<_i252.StorageService>(() => _i252.StorageService());
     gh.factory<_i509.IapService>(() => _i509.IapService(
           gh<_i690.InAppPurchase>(),
           gh<_i974.Logger>(),
@@ -97,20 +109,26 @@ extension GetItInjectableX on _i174.GetIt {
           requestIdProvider: gh<_i81.RequestIdProvider>(),
           config: gh<_i606.Config>(),
         ));
-    gh.singleton<_i445.UserRepository>(
-        () => _i445.UserRepository(gh<_i606.UserApi>()));
     gh.factory<_i361.Dio>(() => apiModule.dio(
           gh<_i606.Config>(),
           gh<_i606.BaseInterceptor>(),
           gh<_i606.LoggerInterceptor>(),
           gh<_i606.ErrorInterceptor>(),
+          gh<_i125.AuthInterceptor>(),
         ));
+    gh.factory<_i194.AIChatApi>(() => _i194.AIChatApi(gh<_i361.Dio>()));
+    gh.singleton<_i445.UserRepository>(
+        () => _i445.UserRepository(gh<_i606.UserApi>()));
+    gh.factory<_i128.AIChatService>(
+        () => _i128.AIChatService(gh<_i194.AIChatApi>()));
     gh.factory<_i419.UserService>(() => _i419.UserService(
           userRepository: gh<_i606.UserRepository>(),
           userApi: gh<_i606.UserApi>(),
           googleSignIn: gh<_i116.GoogleSignIn>(),
           firebaseAuth: gh<_i59.FirebaseAuth>(),
         ));
+    gh.factory<_i1017.AIChatCubit>(
+        () => _i1017.AIChatCubit(gh<_i128.AIChatService>()));
     gh.factory<_i871.SettingCubit>(
         () => _i871.SettingCubit(gh<_i606.UserService>()));
     gh.factory<_i442.LoginCubit>(
