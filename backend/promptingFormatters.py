@@ -14,12 +14,10 @@ When making recommendations:
 - Explain why each dish fits the user's preference or how it can be adapted.
 - Add an interesting or cultural fact about the dish (e.g., origin, popularity, unique preparation).
 
-FORMAT each recommendation in JSON with the following fields. Your response should be a list of these JSON objects:
+Format each recommendation as the following. Your response should be a list of these recommendations:
 
-{
-    "name": "Name of the dish",
-    "reason": "Why this suggestion satisfies the preference",
-}
+1. **Name of the dish**
+2. Why this suggestion satisfies the preference
 """
 
 def label_user_images (images: list[str]) : 
