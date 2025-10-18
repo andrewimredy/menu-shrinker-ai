@@ -1,7 +1,34 @@
 from flask import Flask, jsonify, request
 from werkzeug.datastructures import FileStorage
+import requests
+import os
 
 app = Flask(__name__)
+
+# Get API key from environment variable
+GRADIENT_API_KEY = os.getenv('GRADIENT_API_KEY', 'YOUR_MODEL_ACCESS_KEY')
+
+
+def call_gradient_ai(prompt):
+    """Call Gradient AI model with the given prompt."""
+    url = "https://inference.do-ai.run/v1/chat/completions"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {GRADIENT_API_KEY}"
+    }
+    data = {
+        "model": "openai-gpt-5-mini",
+        "messages": [
+            {
+                "role": "user",
+                "content": prompt
+            }
+        ],
+        "max_tokens": 100
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    return response.json()
 
 
 @app.route('/')
@@ -32,24 +59,18 @@ def menu_suggestion():
     if not menu_photos:
         return jsonify({'error': 'menu_photos are required'}), 400
 
-    # Process the photos and preferences
-    # TODO: Implement AI logic here
-    photo_info = [
-        {
-            'filename': photo.filename,
-            'content_type': photo.content_type,
-            'size': len(photo.read())
-        }
-        for photo in menu_photos
-    ]
+    # Build prompt for AI
+    preferences_str = ", ".join(preferences)
+    prompt = f"Based on these dietary preferences: {preferences_str}, suggest menu items from the uploaded menu photos."
 
-    # Reset file pointers after reading
-    for photo in menu_photos:
-        photo.seek(0)
+    # Call Gradient AI
+    ai_response = call_gradient_ai(prompt)
 
     return jsonify({
-        'message': 'Menu suggestion endpoint - wip',
-
+        'message': 'Menu suggestion generated',
+        'preferences': preferences,
+        'photos_received': len(menu_photos),
+        'ai_suggestion': ai_response
     }), 200
 
 
