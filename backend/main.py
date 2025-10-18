@@ -52,6 +52,19 @@ def health():
     return jsonify({'status': 'healthy'}), 200
 
 
+@app.route('/models', methods=['GET'])
+def get_models():
+    """Get available models from DigitalOcean Gradient AI."""
+    url = "https://inference.do-ai.run/v1/models"
+    headers = {
+        "Authorization": f"Bearer {GRADIENT_API_KEY}",
+        "Content-Type": "application/json"
+    }
+
+    response = requests.get(url, headers=headers)
+    return jsonify(response.json()), response.status_code
+
+
 @app.route('/suggest', methods=['POST', 'GET'])
 def menu_suggestion():
     # Get preferences from form data or JSON
