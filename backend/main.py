@@ -17,7 +17,7 @@ def health():
     return jsonify({'status': 'healthy'}), 200
 
 
-@app.route('/menu_suggestion', methods=['POST'])
+@app.route('/suggest', methods=['POST', 'GET'])
 def menu_suggestion():
     # Get preferences from form data or JSON
     preferences = request.form.getlist('preferences') if 'preferences' in request.form else request.json.get('preferences', [])
