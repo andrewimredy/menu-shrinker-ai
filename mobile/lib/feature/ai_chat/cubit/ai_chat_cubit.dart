@@ -88,24 +88,7 @@ class AIChatCubit extends Cubit<AIChatState> {
   
   // Extract the AI content from the response
   String _extractAIContent(MenuSuggestionResponse response) {
-    // If we have a direct response text that's meaningful, use it
-    if (response.responseText.isNotEmpty && 
-        response.responseText != 'Menu suggestion generated') {
-      return response.responseText;
-    }
-    
-    // Try to extract content from the suggestion data
-    try {
-      if (response.suggestionData != null && 
-          response.suggestionData!.choices.isNotEmpty &&
-          response.suggestionData!.choices.first.message?.content != null) {
-        return response.suggestionData!.choices.first.message!.content!;
-      }
-    } catch (e) {
-      // If there's an error parsing the content, return empty
-    }
-    
-    return '';
+    return response.bubbleContent;
   }
 
   void _addAIResponse(String text, {List<MenuItemSuggestion>? suggestions}) {

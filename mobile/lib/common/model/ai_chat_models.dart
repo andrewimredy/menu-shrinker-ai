@@ -28,6 +28,16 @@ class MenuSuggestionResponse {
     this.photosProcessed,
     this.suggestionData,
   });
+  
+  /// Returns only the message content for bubble display
+  String get bubbleContent {
+    if (suggestionData != null && 
+        suggestionData!.choices.isNotEmpty && 
+        suggestionData!.choices.first.message?.content != null) {
+      return suggestionData!.choices.first.message!.content!;
+    }
+    return responseText;
+  }
 
   factory MenuSuggestionResponse.fromText(String text) {
     return MenuSuggestionResponse(
@@ -64,6 +74,14 @@ class MenuSuggestionResponse {
         }
       }
       
+      // Parse direct menu items if available
+      if (json['menu_items'] != null && json['menu_items'] is List) {
+        final menuItems = (json['menu_items'] as List)
+            .map((item) => MenuItemSuggestion.fromJson(item))
+            .toList();
+        suggestions.addAll(menuItems);
+      }
+      
       // Parse preferences
       List<String>? preferences;
       if (json['preferences'] != null) {
@@ -72,7 +90,7 @@ class MenuSuggestionResponse {
       
       return MenuSuggestionResponse(
         responseText: json['message'] ?? '',
-        success: true,
+        success: json['success'] ?? true,
         suggestions: suggestions.isNotEmpty ? suggestions : null,
         preferences: preferences,
         menuItemsFound: json['menu_items_found'],

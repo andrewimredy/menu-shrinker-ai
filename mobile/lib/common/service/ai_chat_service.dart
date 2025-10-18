@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:injectable/injectable.dart';
 import 'package:image_picker/image_picker.dart';
@@ -24,8 +25,10 @@ class AIChatService {
         preferences: preferences,
       );
       
+
+      final decodedResponse = jsonDecode(response);
       // Parse response
-      return MenuSuggestionResponse.fromJson(response);
+      return MenuSuggestionResponse.fromJson(decodedResponse);
     } catch (e) {
       return MenuSuggestionResponse(
         suggestions: null,
