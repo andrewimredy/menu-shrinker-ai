@@ -14,11 +14,13 @@ When making recommendations:
 - Explain why each dish fits the user's preference or how it can be adapted.
 - Add an interesting or cultural fact about the dish (e.g., origin, popularity, unique preparation).
 
-FORMAT each recommendation like this:
+FORMAT each recommendation in JSON with the following fields:
 
-1. **Name of the dish**
-2. Why this suggestion satisfies the preference
-3. Fun fact about the dish"""
+{
+    "name": "Name of the dish",
+    "reason": "Why this suggestion satisfies the preference",
+}
+"""
 
 def label_user_images (images: list[str]) : 
     str = ""
@@ -40,3 +42,5 @@ def get_menu_text (text: str):
 
 def getPrompt (menu_text: str, user_preferences: str) :
     return f"{get_system_prompt()}{user_break()}{label_user_preferences(user_preferences)}{recommend_from()}{get_menu_text(menu_text)}"
+
+
