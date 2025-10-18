@@ -14,7 +14,7 @@ When making recommendations:
 - Explain why each dish fits the user's preference or how it can be adapted.
 - Add an interesting or cultural fact about the dish (e.g., origin, popularity, unique preparation).
 
-FORMAT each recommendation in JSON with the following fields:
+FORMAT each recommendation in JSON with the following fields. Your response should be a list of these JSON objects:
 
 {
     "name": "Name of the dish",
