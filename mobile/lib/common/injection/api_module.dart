@@ -1,5 +1,6 @@
 // coverage:ignore-file
 import 'package:fodie_ai/common/common.dart';
+import 'package:fodie_ai/common/network/interceptor/auth_interceptor.dart';
 import 'package:dio/dio.dart';
 import 'package:injectable/injectable.dart';
 
@@ -21,8 +22,9 @@ abstract class ApiModule {
     BaseInterceptor baseInterceptor,
     LoggerInterceptor logInterceptor,
     ErrorInterceptor errorInterceptor,
+    AuthInterceptor authInterceptor,
   ) => NetworkManager.getApiDioClient(
     baseUrl: config.aiApiUrl,
-    interceptors: [baseInterceptor, logInterceptor, errorInterceptor],
+    interceptors: [baseInterceptor, logInterceptor, errorInterceptor, authInterceptor],
   );
 }
