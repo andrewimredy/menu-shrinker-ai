@@ -27,7 +27,14 @@ def call_gradient_ai(prompt):
         "max_tokens": 100
     }
 
+    print(f"[Gradient AI] Calling API with prompt: {prompt[:100]}...")
+    print(f"[Gradient AI] API Key set: {GRADIENT_API_KEY[:10]}..." if GRADIENT_API_KEY != 'YOUR_MODEL_ACCESS_KEY' else "[Gradient AI] WARNING: Using default API key")
+
     response = requests.post(url, headers=headers, json=data)
+
+    print(f"[Gradient AI] Response status: {response.status_code}")
+    print(f"[Gradient AI] Response body: {response.text}")
+
     return response.json()
 
 
