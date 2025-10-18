@@ -17,7 +17,7 @@ def call_gradient_ai(prompt):
         "Authorization": f"Bearer {GRADIENT_API_KEY}"
     }
     data = {
-        "model": "gpt-4o-mini",
+        "model": "openai-o3-mini",
         "messages": [
             {
                 "role": "user",
