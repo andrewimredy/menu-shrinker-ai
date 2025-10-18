@@ -1,0 +1,87 @@
+{
+  "lingo_ai": "Lingo AI",
+  "continue": "CONTINUE",
+  "settings": "Settings",
+  "welcome": {
+    "your_private_tutor": "Your private tutor",
+    "welcome_subtitle": "English made easy - speak, practice, and improve with AI teacher",
+    "get_started": "GET STARTED"
+  },
+  "login": {
+    "apple": "APPLE",
+    "google": "GOOGLE",
+    "legal_text": "By signing in to Lingo AI, you agree to our ",
+    "terms": "Terms",
+    "and": " and ",
+    "privacy_policy": "Privacy Policy."
+  },
+  "paywall": {
+    "get": "Get ",
+    "unlimited": "Unlimited ",
+    "access": "Access",
+    "talk_to_tutor": "Talk to you AI tutor without limits, \nanytime, anywhere.",
+    "unlimited_practice": "Unlimited Interactive Practice",
+    "personalized_plan": "Personalized Study Plan",
+    "realtime_feedback": "Real-time AI Feedback",
+    "track_progress": "Control & Track Your Progress",
+    "cancel_anytime": "Cancel anytime",
+    "terms_of_condition": "Terms of condition",
+    "privacy_policy": "Privacy Policy",
+    "restore": "Restore",
+    "plans": {
+      "months": "{} Months",
+      "weekly": "Weekly",
+      "best_deal": "BEST DEAL",
+      "price_per_week_brackets": "(${}\/week)",
+      "price_per_week": "${}\/week",
+      "free_trial_days": "{} DAYS FREE"
+    }
+  },
+  "setting": {
+    "logout": "LOG OUT",
+    "delete_account": "DELETE ACCOUNT"
+  },
+  "onboarding": {
+    "what_is_your_native_language": "What is your\nnative language?",
+    "what_is_your_english_level": "What is your\nEnglish level?",
+    "why_do_you_want_learn_english": "Why do you want\nlearn English?",
+    "what_topics_are_you_interested_in": "What topics are you\ninterested in?",
+    "how_much_would_you_like_practice_every_day": "How much would you like\npractice every day?",
+    "learn_reasons": {
+      "travel_or_live_abroad": "Travel or live abroad",
+      "career_growth": "Career growth",
+      "self_improvement": "Self improvement",
+      "watch_movies_and_read_books": "Watch movies and read books",
+      "other": "Other"
+    },
+    "language_levels": {
+      "a1_elementary": "A1 Elementary",
+      "a2_pre_intermediate": "A2 Pre Intermediate",
+      "b1_intermediate": "B1 Intermediate",
+      "b2_upper_intermediate": "B2 Upper Intermediate",
+      "c1_advanced": "C1 Advanced",
+      "c2_proficient": "C2 Proficient"
+    },
+    "topics": {
+      "business": "Business",
+      "travel": "Travel",
+      "entertainment": "Entertainment",
+      "socializing": "Socializing",
+      "culture": "Culture",
+      "dating": "Dating",
+      "shopping": "Shopping"
+    },
+    "practice_time": {
+      "min": "{} min"
+    }
+  },
+  "lesson": {
+    "are_you_sure": "Are you sure?",
+    "incomplete_feedback_warning": "You won't receive a feedback report unless you complete the session.",
+    "lesson_complete": "Lesson Complete",
+    "continue_or_wrap_up": "Do you want to continue the lesson or wrap it up?",
+    "continue_call": "CONTINUE CALL",
+    "leave_call": "LEAVE CALL",
+    "press_and_hold": "Press and hold to record your voice. Release to send it."
+  }
+}
