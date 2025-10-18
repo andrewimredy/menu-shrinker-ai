@@ -11,6 +11,7 @@ import base64
 from PIL import Image
 import pytesseract
 from io import BytesIO
+from promptingFormatters import getPrompt
 
 # ============================================================================
 # Configuration
@@ -159,13 +160,8 @@ def suggest():
 
     # Build prompt for AI
     preferences_str = ", ".join(preferences)
-    prompt = f"""Here is a restaurant menu:
-
-{full_menu_text}
-
-Based on these dietary preferences: {preferences_str}
-
-Please suggest 3-5 menu items that best match these preferences. For each item, explain why it matches the preferences."""
+    #todo: get prompt from def getPrompt (menu_text: str, user_preferences: str) :
+    prompt = getPrompt(full_menu_text, preferences_str)
 
     # Call Gradient AI
     ai_response = call_gradient_ai(prompt)
