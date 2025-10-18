@@ -155,6 +155,8 @@ def suggest():
     # Combine all menu text
     full_menu_text = "\n\n=== MENU ===\n\n".join(menu_texts)
 
+    print(f"[OCR] Full extracted menu text:\n{full_menu_text}\n")
+
     # Build prompt for AI
     preferences_str = ", ".join(preferences)
     prompt = f"""Here is a restaurant menu:
