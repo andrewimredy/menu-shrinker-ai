@@ -11,6 +11,7 @@ import base64
 from PIL import Image
 import pytesseract
 from io import BytesIO
+import time
 
 # ============================================================================
 # Configuration
@@ -28,6 +29,7 @@ GRADIENT_API_KEY = os.getenv('GRADIENT_API_KEY', 'YOUR_MODEL_ACCESS_KEY')
 
 def extract_text_from_image(image_file):
     """Extract text from an image file using OCR."""
+    start_time = time.time()
     try:
         # Read image data
         img_data = image_file.read()
@@ -39,10 +41,12 @@ def extract_text_from_image(image_file):
         # Extract text using pytesseract
         text = pytesseract.image_to_string(image)
 
-        print(f"[OCR] Extracted {len(text)} characters from {image_file.filename}")
+        elapsed = time.time() - start_time
+        print(f"[OCR] Extracted {len(text)} characters from {image_file.filename} in {elapsed:.2f}s")
         return text.strip()
     except Exception as e:
-        print(f"[OCR] Error extracting text: {str(e)}")
+        elapsed = time.time() - start_time
+        print(f"[OCR] Error extracting text after {elapsed:.2f}s: {str(e)}")
         return ""
 
 
@@ -159,6 +163,7 @@ def suggest():
 
     # Build prompt for AI
     preferences_str = ", ".join(preferences)
+    #todo prompt = get_prompt( prefs, menu)
     prompt = f"""Here is a restaurant menu:
 
 {full_menu_text}
